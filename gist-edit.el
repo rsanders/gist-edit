@@ -40,10 +40,9 @@
 (autoload 'gist               "gist-list")
 
 
-;;;### (autoloads (gist-edit-mode gist-edit/list gist-edit/open gist-edit
-;;;;;;  gist-edit/prefix-key gist-edit/tmp-directory gist-edit) "gist-edit"
-;;;;;;  "gist-edit.el" (20270 48914))
-;;; Generated autoloads from gist-edit.el
+
+;;; Customizations
+
 ;;;###autoload
 (defgroup gist-edit nil
   "Customization for the 'gist-edit' package for editing GitHub gists (git-based pasties)"
@@ -67,8 +66,6 @@
 (defvar gist-edit/tmp-directory "~/.emacs.d/gist-edit" "\
 The directory in which to store checked out gists")
 
-(custom-autoload 'gist-edit/tmp-directory "gist-edit" t)
-
 ;;;###autoload
 (defcustom gist-edit/prefix-key
   (kbd "C-x g")
@@ -79,8 +76,6 @@ The directory in which to store checked out gists")
 
 (defvar gist-edit/prefix-key (kbd "C-x g") "\
 The prefix key for the Gist Edit keymap")
-
-(custom-autoload 'gist-edit/prefix-key "gist-edit" t)
 
 (defun gist-edit/local-gist-dir (gistspec)
   (concat gist-edit/tmp-directory "/gist-"
@@ -149,25 +144,12 @@ The prefix key for the Gist Edit keymap")
       (gist-edit/clone (gist-edit/gist-url gistnum) dir))
     (gist-edit/open dir)))
 
-(autoload 'gist-edit "gist-edit" "\
-Edit an existing Github Gist by number/string name
-
-  Will just open the local checkout if it already exists; otherwise
-  clone the Gist and open it.
-
-\(fn GISTNUM)" t nil)
-
 ;;;###autoload
 (defun gist-edit/open (dir)
   "Opens an already checked out gist for editing"
   (interactive "MGist Number: ")
   (find-file dir)
   (magit-status dir))
-
-(autoload 'gist-edit/open "gist-edit" "\
-Opens an already checked out gist for editing
-
-\(fn DIR)" t nil)
 
 (defun gist-edit/browse-web-url ()
   "Open the URL for the Gist web page in the system browser"
@@ -189,16 +171,14 @@ Opens an already checked out gist for editing
   (magit-run-git "push")
   (message "Gist updated!"))
 
+(defun gist-edit/owned-by (gistspec)
+  )
+
 ;;;###autoload
 (defun gist-edit/list ()
   "Opens a list of open gists"
   (interactive)
   (find-file gist-edit/tmp-directory))
-
-(autoload 'gist-edit/list "gist-edit" "\
-Opens a list of open gists
-
-\(fn)" t nil)
 
 (defvar gist-edit/keymap
   (let ((map (make-sparse-keymap)))
@@ -232,14 +212,9 @@ Opens a list of open gists
                   (member major-mode smart-tab-disabled-major-modes))
           (smart-tab-mode-off)))))
 
-(autoload 'gist-edit-mode "gist-edit" "\
-Mode for editing a Gist
-
-\(fn &optional ARG)" t nil)
 
 (provide 'gist-edit)
 
 ;;; Local Variables:
 ;;; lexical-binding: t
-;;; blabbity: 2
 ;;; End:
