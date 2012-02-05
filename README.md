@@ -32,11 +32,12 @@ Keymap
 These keys are provided in the `C-x g` prefix map when you edit any
 file in a gist-edit-checked-out repository:
     
+    h - help
+    b - browse the web page for the repo
     f - finish; commit and push to Github
     l - list all gists
-    o - opening the web page for the repo
+    o - open another gist
     p - push locally committed changes
-    h - help
     s - magit-status
     
 

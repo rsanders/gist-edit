@@ -181,6 +181,11 @@ Opens an already checked out gist for editing
   (unless (magit-everything-clean-p)
     (magit-stage-all)
     (magit-run-git "commit" "-m" "automatically updated gist"))
+  (gist-edit/push))
+
+(defun gist-edit/push ()
+  "Push current repo to gist"
+  (interactive)  
   (magit-run-git "push")
   (message "Gist updated!"))
 
@@ -197,14 +202,17 @@ Opens a list of open gists
 
 (defvar gist-edit/keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (char-to-string help-char) 'gist-edit/help)
-    (define-key map [help] 'gist-edit/help)
-    (define-key map [f1] 'gist-edit/help)
+    ;;(define-key map (char-to-string help-char) 'gist-edit/help)
+    ;;(define-key map [help] 'gist-edit/help)
+    ;;(define-key map [f1] 'gist-edit/help)
+    ;;(define-key map "h" 'gist-edit/help)
     (define-key map "b" 'gist-edit/browse-web-url)
     (define-key map "f" 'gist-edit/finish)
     (define-key map "l" 'gist-edit/list)
+    (define-key map "m" 'gist-list)
     (define-key map "o" 'gist-edit)
     (define-key map "p" 'gist-edit/push)
+    (define-key map "s" 'magit-status)
     map)
   "Keymap for Gist Edit mode.")
 
