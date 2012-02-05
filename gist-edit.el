@@ -1,9 +1,37 @@
-;; -*- lexical-binding: t; -*-
+;;;***
+;;; gist-edit.el --- Edit a Github Gist file/repo
+;;
+;; Copyright (c) 2012 Robert Sanders
+;;
+;; Author: Robert Sanders <robert@curioussquid.com>
+;; URL: http://github.com/rsanders/gist-edit
+;; Version: 0.0.1
+;; Keywords: convenience
+;; Package-Requires: ((magit "1.1.1") (magithub "0.1"))
 
-;; (add-hook 'after-init-hook
-;;           (lambda ()
-;;             (require 'magit)
-;;             (require 'magithub)))
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 3
+;; of the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Code:
+
+;; Emacs Lisp
+
 
 (require 'magit)
 (require 'magithub)
@@ -11,11 +39,20 @@
 (autoload 'gist               "gist")
 (autoload 'gist               "gist-list")
 
+
+;;;### (autoloads (gist-edit-mode gist-edit/list gist-edit/open gist-edit
+;;;;;;  gist-edit/prefix-key gist-edit/tmp-directory gist-edit) "gist-edit"
+;;;;;;  "gist-edit.el" (20270 48914))
+;;; Generated autoloads from gist-edit.el
+;;;###autoload
 (defgroup gist-edit nil
   "Customization for the 'gist-edit' package for editing GitHub gists (git-based pasties)"
   :prefix "gist-edit"
   )
 
+(let ((loads (get 'gist-edit 'custom-loads))) (if (member '"gist-edit" loads) nil (put 'gist-edit 'custom-loads (cons '"gist-edit" loads))))
+
+;;;###autoload
 (defcustom gist-edit/tmp-directory
   "~/.emacs.d/gist-edit"
   ;; (let ((dir (format "%s%s/%d/" temporary-file-directory "gist-edit" (user-real-uid))))
@@ -27,12 +64,23 @@
   :type '(choice (const :tag "Default" "~/.emacs.d/gist-edit") directory)
   )
 
+(defvar gist-edit/tmp-directory "~/.emacs.d/gist-edit" "\
+The directory in which to store checked out gists")
+
+(custom-autoload 'gist-edit/tmp-directory "gist-edit" t)
+
+;;;###autoload
 (defcustom gist-edit/prefix-key
   (kbd "C-x g")
   "The prefix key for the Gist Edit keymap"
   :group 'gist-edit
   :type 'string
   )
+
+(defvar gist-edit/prefix-key (kbd "C-x g") "\
+The prefix key for the Gist Edit keymap")
+
+(custom-autoload 'gist-edit/prefix-key "gist-edit" t)
 
 (defun gist-edit/local-gist-dir (gistspec)
   (concat gist-edit/tmp-directory "/gist-"
@@ -57,11 +105,6 @@
    (not (equal gist-edit/tmp-directory dir))
    (equal 0
           (string-match gist-edit/tmp-directory dir))))
-
-(defun gist-edit/open (dir)
-  "Opens an already checked out gist for editing"
-  (find-file dir)
-  (magit-status dir))
 
 (defun gist-edit/setup-directory (number repo dir &optional variables)
   (with-temp-buffer
@@ -94,12 +137,37 @@
 
 
 
+;;;###autoload
 (defun gist-edit (gistnum)
+  "Edit an existing Github Gist by number/string name
+
+  Will just open the local checkout if it already exists; otherwise
+  clone the Gist and open it."
   (interactive "MGist Number: ")
   (let ((dir (gist-edit/local-gist-dir gistnum)))
     (unless (file-exists-p dir)
       (gist-edit/clone (gist-edit/gist-url gistnum) dir))
     (gist-edit/open dir)))
+
+(autoload 'gist-edit "gist-edit" "\
+Edit an existing Github Gist by number/string name
+
+  Will just open the local checkout if it already exists; otherwise
+  clone the Gist and open it.
+
+\(fn GISTNUM)" t nil)
+
+;;;###autoload
+(defun gist-edit/open (dir)
+  "Opens an already checked out gist for editing"
+  (interactive "MGist Number: ")
+  (find-file dir)
+  (magit-status dir))
+
+(autoload 'gist-edit/open "gist-edit" "\
+Opens an already checked out gist for editing
+
+\(fn DIR)" t nil)
 
 (defun gist-edit/browse-web-url ()
   "Open the URL for the Gist web page in the system browser"
@@ -116,10 +184,16 @@
   (magit-run-git "push")
   (message "Gist updated!"))
 
+;;;###autoload
 (defun gist-edit/list ()
   "Opens a list of open gists"
   (interactive)
   (find-file gist-edit/tmp-directory))
+
+(autoload 'gist-edit/list "gist-edit" "\
+Opens a list of open gists
+
+\(fn)" t nil)
 
 (defvar gist-edit/keymap
   (let ((map (make-sparse-keymap)))
@@ -134,6 +208,7 @@
     map)
   "Keymap for Gist Edit mode.")
 
+;;;###autoload
 (define-minor-mode gist-edit-mode
   "Mode for editing a Gist"
   :lighter " GistE"
@@ -149,7 +224,14 @@
                   (member major-mode smart-tab-disabled-major-modes))
           (smart-tab-mode-off)))))
 
+(autoload 'gist-edit-mode "gist-edit" "\
+Mode for editing a Gist
 
-;; (makunbound 'gist-edit/tmp-directory)
+\(fn &optional ARG)" t nil)
 
 (provide 'gist-edit)
+
+;;; Local Variables:
+;;; lexical-binding: t
+;;; blabbity: 2
+;;; End:
