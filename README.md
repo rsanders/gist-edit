@@ -1,5 +1,5 @@
 gist-edit.el -- Emacs mode for editing files in a Gist repo
-==========================================================
+===========================================================
 
 This is a mode for working on Github Gists in their full repo form.
 It facilitates cloning, editing, committing, pushing, and listing them.
