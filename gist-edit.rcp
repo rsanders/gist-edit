@@ -1,0 +1,4 @@
+(:name gist-edit
+       :type git
+       :url "git://github.com/rsanders/gist-edit.git"
+       :load "gist-edit-autoloads.el")
