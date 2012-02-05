@@ -19,12 +19,19 @@
   :type '(choice (const :tag "Default" "~/.emacs.d/gist-edit") directory)
   )
 
+(defcustom gist-edit/prefix-key
+  (kbd "C-x g")
+  "The prefix key for the Gist Edit keymap"
+  :group 'gist-edit
+  :type 'string
+  )
+
 (defun gist-edit/local-gist-dir (gistspec)
   (concat gist-edit/tmp-directory "/gist-"
           (gist-edit/gist-number-from-url gistspec)))
 
 (defun gist-edit/gist-url (gistspec)
-  (format "https://gist.github.com/%s.git"
+  (format "git://gist.github.com/%s.git"
           (gist-edit/gist-number-from-url gistspec)))
 
 (defun gist-edit/writable-gist-url (gistspec)
@@ -61,11 +68,12 @@
                      (gist-edit-buffer . t)
                      ,@variables
                      (eval . (gist-edit-mode t)))))))
+      (princ alist (current-buffer))
       (write-file (concat dir "/.dir-locals.el"))
+      (append-to-file ".dir-locals.el\n" nil (concat dir "/.git/info/exclude"))
       )
     )
   )
-
 
 (defun gist-edit (gistnum)
   (interactive "MGist Number: ")
@@ -74,13 +82,12 @@
       (gist-edit/clone (gist-edit/gist-url gistnum) dir))
     (gist-edit/open dir)))
 
-
 (defun gist-edit/clone (repo destdir)
   "Clone an existing gist into a local directory"
   (let ((number (gist-edit/gist-number-from-url repo))
         (dir    (or destdir (gist-edit/local-gist-dir repo))))
     (make-directory (file-name-directory dir) t)
-    (magit-run-git "clone" repo dir)
+    (magit-run-git "clone" repo (expand-file-name dir))
     (gist-edit/setup-directory number repo dir)
     (gist-edit/open dir)))
 
@@ -95,16 +102,12 @@
   "Keymap for Gist Edit mode.")
 
 (define-minor-mode gist-edit-mode
-  "Enable `smart-tab' to be used in place of tab.
-
-With no argument, this command toggles the mode.
-Non-null prefix argument turns on the mode.
-Null prefix argument turns off the mode."
+  "Mode for editing a Gist"
   :lighter " GistE"
   :group 'gist-edit
   :require 'gist-edit
-  :keymap gist-edit/keymap
-  (if smart-tab-mode
+  :keymap `((,gist-edit/prefix-key . ,gist-edit/keymap))
+  (if gist-edit-mode
       (progn
         ;; Don't start `smart-tab-mode' when in the minibuffer or a read-only
         ;; buffer.
