@@ -32,7 +32,6 @@
 
 ;; Emacs Lisp
 
-
 (require 'magit)
 (require 'magithub)
 (autoload 'browse-url-generic "browse-url")
@@ -77,6 +76,10 @@ The directory in which to store checked out gists")
 (defvar gist-edit/prefix-key (kbd "C-x g") "\
 The prefix key for the Gist Edit keymap")
 
+
+
+;;; utility functions
+
 (defun gist-edit/local-gist-dir (gistspec)
   (concat gist-edit/tmp-directory "/gist-"
           (gist-edit/gist-number-from-url gistspec)))
@@ -101,6 +104,14 @@ The prefix key for the Gist Edit keymap")
    (equal 0
           (string-match gist-edit/tmp-directory dir))))
 
+(defun gist-edit/web-url ()
+  "The URL for the Gist web page"
+  (format "https://gist.github.com/%s" gist-edit-number))
+
+
+
+;;; Repo creation
+
 (defun gist-edit/setup-directory (number repo dir &optional variables)
   (with-temp-buffer
     (let ((alist
@@ -116,7 +127,6 @@ The prefix key for the Gist Edit keymap")
     )
   )
 
-
 (defun gist-edit/clone (repo destdir)
   "Clone an existing gist into a local directory"
   (let ((number (gist-edit/gist-number-from-url repo))
@@ -126,11 +136,9 @@ The prefix key for the Gist Edit keymap")
     (gist-edit/setup-directory number repo dir)
     (gist-edit/open dir)))
 
-(defun gist-edit/web-url ()
-  "The URL for the Gist web page"
-  (format "https://gist.github.com/%s" gist-edit-number))
-
 
+
+;;; Interactive commands
 
 ;;;###autoload
 (defun gist-edit (gistnum)
@@ -179,6 +187,10 @@ The prefix key for the Gist Edit keymap")
   "Opens a list of open gists"
   (interactive)
   (find-file gist-edit/tmp-directory))
+
+
+
+;;; Minor mode setup
 
 (defvar gist-edit/keymap
   (let ((map (make-sparse-keymap)))
