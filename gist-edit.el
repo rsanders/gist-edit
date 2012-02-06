@@ -92,9 +92,11 @@ The prefix key for the Gist Edit keymap")
           (gist-edit/gist-number-from-url gistspec)))
 
 (defun gist-edit/gist-number-from-url (url)
+  "Given a GitHub Gist URL, return the gist's id. Will also work with
+Gist ids provided as a string."
   (replace-regexp-in-string
    "\.git$" ""
-   (first (last (split-string url "[/:]")))))
+   (first (last (split-string (format "%s" url) "[/:]")))))
 
 (defun gist-edit/gist-directory? (dir)
   "Given a path, returns true if the directory is a gist"
@@ -126,6 +128,28 @@ The prefix key for the Gist Edit keymap")
     )
   )
 
+(defun gist-edit/my-user-id ()
+  "Return the current GitHub user ID as a string"
+  (plist-get (githubv3/user-info) :id))
+
+(defun gist-edit/gist-owner? (gist)
+  "Given a gist id or plist, determines whether the current user owns id"
+  (unless (listp gist)
+    (setq gist (githubv3/get-gist gist)))
+  (equal (gist-edit/my-user-id)
+         (plist-get (plist-get gist :user) :id)))
+
+(defun gist-edit/get-editable-copy (gistnum)
+  (let ((gist-info (githubv3/get-gist gistnum)))
+    (unless (gist-edit/gist-owner? gist-info)
+      (let ((forked-gist-info (githubv3/fork-gist gistnum)))
+        (setq gist-info forked-gist-info)))
+    (message "Cloning gist %s" (plist-get gist-info :id))
+    (let ((destdir   (gist-edit/local-gist-dir gistnum)))
+      (gist-edit/clone (plist-get gist-info :git_push_url) destdir)
+      destdir)
+    ))
+
 (defun gist-edit/clone (repo destdir)
   "Clone an existing gist into a local directory"
   (let ((number (gist-edit/gist-number-from-url repo))
@@ -133,7 +157,8 @@ The prefix key for the Gist Edit keymap")
     (make-directory (file-name-directory dir) t)
     (magit-run-git "clone" repo (expand-file-name dir))
     (gist-edit/setup-directory number repo dir)
-    (gist-edit/open dir)))
+    (gist-edit/open dir)
+    dir))
 
 
 
@@ -148,7 +173,7 @@ The prefix key for the Gist Edit keymap")
   (interactive "MGist Number: ")
   (let ((dir (gist-edit/local-gist-dir gistnum)))
     (unless (file-exists-p dir)
-      (gist-edit/clone (gist-edit/gist-url gistnum) dir))
+      (setq dir (gist-edit/get-editable-copy (gist-edit/gist-number-from-url gistnum))))
     (gist-edit/open dir)))
 
 ;;;###autoload
