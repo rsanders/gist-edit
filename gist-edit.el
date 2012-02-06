@@ -34,6 +34,7 @@
 
 (require 'magit)
 (require 'magithub)
+(require 'github-api-v3)
 (autoload 'browse-url-generic "browse-url")
 (autoload 'gist               "gist")
 (autoload 'gist               "gist-list")
@@ -47,8 +48,6 @@
   "Customization for the 'gist-edit' package for editing GitHub gists (git-based pasties)"
   :prefix "gist-edit"
   )
-
-(let ((loads (get 'gist-edit 'custom-loads))) (if (member '"gist-edit" loads) nil (put 'gist-edit 'custom-loads (cons '"gist-edit" loads))))
 
 ;;;###autoload
 (defcustom gist-edit/tmp-directory
