@@ -1,4 +1,3 @@
-;;;***
 ;;; gist-edit.el --- Edit a Github Gist file/repo
 ;;
 ;; Copyright (c) 2012 Robert Sanders
@@ -27,6 +26,11 @@
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;; This is a mode for working on Github Gists in their full repo form.
+;; It facilitates cloning, editing, committing, pushing, and listing them.
 
 ;;; Code:
 
